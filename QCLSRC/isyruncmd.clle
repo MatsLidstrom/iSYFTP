@@ -1,0 +1,30 @@
+/* ------------------------------------------------------------------------------- */
+/* Program.........: ISYRUNCMD                                                     */
+/* Description.....: FTP made Easy for i - Acts as an FTP Client                   */
+/* ................: Runs FTP commands placed in file iSYFTPcmd. Logs in iSYFTPlog */
+/* Author..........: Mats Lidström                                                 */
+/* Created.........: 2018-07-28                                                    */
+/* ------------------------------------------------------------------------------- */
+
+PGM        PARM(&HOST_PARM &PORT &OPTION)
+
+  DCL        VAR(&HOST_PARM) TYPE(*CHAR) LEN(120)
+  DCL        VAR(&PORT)      TYPE(*CHAR) LEN(10)
+  DCL        VAR(&OPTION)    TYPE(*CHAR) LEN(120)
+  DCL        VAR(&HOST)      TYPE(*CHAR) LEN(122)
+  DCL        VAR(&QUOTE)     TYPE(*CHAR) LEN(1) VALUE('''')
+
+  OVRDBF     FILE(INPUT) TOFILE(QTEMP/iSYFTPcmd)
+  OVRDBF     FILE(OUTPUT) TOFILE(QTEMP/iSYFTPlog)
+
+  CHGVAR VAR(&HOST) VALUE(&QUOTE *CAT &HOST_PARM *CAT &QUOTE)
+  IF COND(&PORT = ' ') THEN(DO)
+    CHGVAR VAR(&PORT) VALUE('*DFT')
+  ENDDO
+
+  FTP        RMTSYS(&HOST) PORT(&PORT)
+
+  DLTOVR     FILE(INPUT)
+  DLTOVR     FILE(OUTPUT)
+
+ENDPGM

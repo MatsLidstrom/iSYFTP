@@ -1,0 +1,9 @@
+STRPGMEXP PGMLVL(*CURRENT)
+/********************************************************************/
+/*   *MODULE      ISYFTP    ISYFTP       2021-03-01                 */
+/********************************************************************/
+  EXPORT SYMBOL("GET_FILE")
+  EXPORT SYMBOL("LIST_FILES")
+  EXPORT SYMBOL("PUT_FILE")
+  EXPORT SYMBOL("MGET_FILES")  
+ENDPGMEXP
