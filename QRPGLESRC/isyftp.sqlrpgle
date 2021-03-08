@@ -12,7 +12,7 @@ ctl-opt nomain;
 // Version.........: V1.1.0 2020-03-16 - Added PUT
 // Version.........: V2.0.0 2020-05-09 - Added support for SFTP both Public Key Authentication and Password
 // Version.........: V2.0.1 2021-02-27 - Structure and some clean up. Also named change (not _PR/_SV/_PT)
-// Version.........: V2.0.2 2021-03-01 - mget added for Multiple Get. Thanks Christoffer Öhman!
+// Version.........: V2.0.2 2021-03-01 - mget added for Multiple Get. Thanks Christoffer Öhman!!
 //
 //
 // Information of how to used Mode SFTP:
