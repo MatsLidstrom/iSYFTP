@@ -13,6 +13,7 @@ ctl-opt nomain;
 // Version.........: V2.0.0 2020-05-09 - Added support for SFTP both Public Key Authentication and Password
 // Version.........: V2.0.1 2021-02-27 - Structure and some clean up. Also named change (not _PR/_SV/_PT)
 // Version.........: V2.0.2 2021-03-01 - mget added for Multiple Get. Thanks Christoffer Öhman!!
+// Version.........: V2.0.3 2021-06-24 - Added support for long directory and file names
 //
 //
 // Information of how to used Mode SFTP:
@@ -50,13 +51,13 @@ end-ds;
 
 // Declare Global Datastructures
 dcl-ds  FTP_Log Qualified  dim(9999);
-    LogData     char(132);
+    LogData     char(1024);
 end-ds;
 
 // Declare Global Variables
-dcl-s   Command             varchar(250);
-dcl-s   FTP_Command         char(120);
-dcl-s   FTP_Command_List    char(120) dim(99);
+dcl-s   Command             varchar(256);
+dcl-s   FTP_Command         char(1024);
+dcl-s   FTP_Command_List    char(1024) dim(99);
 dcl-s   FTPCommandRows      int(5);
 dcl-s   LogRows             int(5);
 
@@ -915,10 +916,10 @@ dcl-proc init_FTPworkfiles;
         DECLARE GLOBAL TEMPORARY TABLE SESSION.XYZ269
           (Script CHAR(1024) NOT NULL);
     else;
-      Command = 'CRTSRCPF FILE(QTEMP/iSYFTPcmd) RCDLEN(132) MBR(data)';
+      Command = 'CRTSRCPF FILE(QTEMP/iSYFTPcmd) RCDLEN(1024) MBR(data)';
       exec_Command(Command);
 
-      Command = 'CRTSRCPF FILE(QTEMP/iSYFTPlog) RCDLEN(132) MBR(data)';
+      Command = 'CRTSRCPF FILE(QTEMP/iSYFTPlog) RCDLEN(1024) MBR(data)';
       exec_Command(Command);
     endif;
 

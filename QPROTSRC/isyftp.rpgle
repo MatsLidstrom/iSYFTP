@@ -10,7 +10,7 @@
 // Declare Global Template Fields
 
 dcl-ds T_FileList Qualified Template;
-    FileName    varchar(132);
+    FileName    varchar(256);
     Created     varchar(132);
     Size        varchar(132);
 end-ds;
@@ -24,13 +24,13 @@ dcl-ds T_FTP_Options Qualified Template;
     Log                     char(1)      inz(*blank);
 end-ds;
 
-dcl-s   T_RemoteDirectory   varchar(132) inz(*blank);
+dcl-s   T_RemoteDirectory   varchar(256) inz(*blank);
 dcl-s   T_Prefix            varchar(20)  inz(*blank);
 dcl-s   T_Extension         varchar(20)  inz(*blank);
 dcl-s   T_FileRows          int(5);
-dcl-s   T_RemoteFileName    varchar(132) inz(*blank);
-dcl-s   T_LocalDirectory    varchar(132) inz(*blank);
-dcl-s   T_LocalFileName     varchar(132) inz(*blank);
+dcl-s   T_RemoteFileName    varchar(256) inz(*blank);
+dcl-s   T_LocalDirectory    varchar(256) inz(*blank);
+dcl-s   T_LocalFileName     varchar(256) inz(*blank);
 dcl-s   T_Replace           char(1)      inz(*blank);
 dcl-s   T_Remove            char(1)      inz(*blank);
 
