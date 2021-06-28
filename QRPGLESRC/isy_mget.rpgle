@@ -1,7 +1,7 @@
 **free
 ctl-opt bnddir('ISYFTP') actgrp('iSYFTP') ;
 // ----------------------------------------------------------------------------
-// Program.........: ISY_GET API
+// Program.........: ISY_MGET API
 // Description.....: FTP made Easy for i - Get multiple files from a dir from requested
 // Description.....: FTP Server and stores it locally
 // Description.....: LocalDirectory becomes the CURDIR.
