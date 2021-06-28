@@ -25,14 +25,14 @@ dcl-ds T_FTP_Options Qualified Template
 end-ds;
 
 dcl-ds  isy_FTP_Options     likeds(T_FTP_Options);
-dcl-s   isy_RemoteDirectory varchar(132) inz(*blank);
+dcl-s   isy_RemoteDirectory varchar(256) inz(*blank);
 dcl-s   isy_Prefix          varchar(20) inz(*blank);
 dcl-s   isy_Extension       varchar(20) inz(*blank);
 dcl-ds  isy_FileList        likeds(T_FileList) dim(9999);
 dcl-s   isy_FileRows        int(5) inz(*zero);
-dcl-s   isy_RemoteFileName  varchar(132) inz(*blank);
-dcl-s   isy_LocalDirectory  varchar(132) inz(*blank);
-dcl-s   isy_LocalFileName   varchar(132) inz(*blank);
+dcl-s   isy_RemoteFileName  varchar(256) inz(*blank);
+dcl-s   isy_LocalDirectory  varchar(256) inz(*blank);
+dcl-s   isy_LocalFileName   varchar(256) inz(*blank);
 dcl-s   isy_Replace         char(1) inz(*blank);
 dcl-s   isy_Remove          char(1) inz(*blank);
 
