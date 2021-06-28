@@ -1,7 +1,7 @@
 **free
 //**********************************************************************
 //
-//  Description..:  iSY_API_PT - Prototypes for iSYFTP API:s
+//  Description..:  iSY_API - Prototypes for iSYFTP API:s
 //  Programmer...:  Mats Lidström
 //  Date.........:  2018-08-20
 //

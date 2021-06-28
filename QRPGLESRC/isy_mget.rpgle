@@ -10,7 +10,7 @@ ctl-opt bnddir('ISYFTP') actgrp('iSYFTP') ;
 // Created.........: 2020-11-06
 // ----------------------------------------------------------------------------
 
-/include ISYFTP/QPROTSRC,ISYFTP_PT
+/include ISYFTP/QPROTSRC,ISYFTP
 
 dcl-pi *n ;
   FTP_Options      likeds(T_FTP_Options) ;
