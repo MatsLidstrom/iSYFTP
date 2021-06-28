@@ -14,6 +14,7 @@ ctl-opt nomain;
 // Version.........: V2.0.1 2021-02-27 - Structure and some clean up. Also named change (not _PR/_SV/_PT)
 // Version.........: V2.0.2 2021-03-01 - mget added for Multiple Get. Thanks Christoffer Öhman!!
 // Version.........: V2.0.3 2021-06-24 - Added support for long directory and file names
+// Version ........: V2.0.4 2021-06-28 - Set bin mode if PUT from qsys.lib
 //
 //
 // Information of how to used Mode SFTP:
@@ -493,6 +494,11 @@ dcl-proc put_File export;
 
     if not gblSFTP;
       FTP_Command = 'namefmt 1'; // Change File Name Format to IBM i IFS Style
+      prepare_FTPcmd(FTP_Command);
+    endif;
+
+    if %scan('qsys.lib' : LocalDirectory) > *zero;
+      FTP_Command = 'bin'; // Set Binary Mode IBM i Save File
       prepare_FTPcmd(FTP_Command);
     endif;
 
