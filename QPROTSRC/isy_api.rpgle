@@ -10,7 +10,7 @@
 // Declare Global Template Fields
 
 dcl-ds T_FileList Qualified Template;
-  FileName    varchar(132);
+  FileName    varchar(256);
   Created     varchar(132);
   Size        varchar(132);
 end-ds;
