@@ -1267,7 +1267,7 @@ dcl-proc exec_Command;
   end-pi;
 
     dcl-pr QCMDEXC extpgm;
-      *n  like(Command) options(*varsize) const;
+      *n  char(256) options(*varsize) const;
       *n  packed(15:5) const;
     end-pr;
 
