@@ -15,7 +15,7 @@ dcl-ds T_FileList Qualified Template;
   Size        varchar(132);
 end-ds;
 
-dcl-ds T_FTP_Options Qualified Template
+dcl-ds T_FTP_Options Qualified Template;
   Host        varchar(132) inz(*blank);
   User        varchar(132) inz(*blank);
   Password    varchar(132) inz(*blank);
