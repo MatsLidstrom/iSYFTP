@@ -15,17 +15,22 @@ ctl-opt nomain;
 // Version.........: V2.0.2 2021-03-01 - mget added for Multiple Get. Thanks Christoffer Öhman!!
 // Version.........: V2.0.3 2021-06-24 - Added support for long directory and file names
 // Version ........: V2.0.4 2021-06-28 - Set bin mode if PUT from qsys.lib
+// Version ........: V2.0.5 2022-12-29 - CPYTOIMPF keyword values RCDDLM(*LF) STRDLM(*NONE) STRESCCHR(*NONE) RMVBLANK(*BOTH)
+//                                       set to prevent new default values when upgrading IBM i OS
+// Version ........: V2.1.0 2022-12-29 - SSH_ASKPASS_REQUIRE=force added to "export DISPLAY= SSH_ASKPASS_REQUIRE=force SSH_ASKPASS="
+//                                       to support IBM i 7.5 and OpenSSH_8.6p1
+// Version ........: V2.1.1 2023-08-23 - Removal of Remote Directory and forward slsh from  filename in list_Files
 //
 //
-// Information of how to used Mode SFTP:
+// Information of how to use Mode SFTP:
 //
 // Note! Shell commands can be run via the 5250 Shell Terminal (call qp2term) or via PuTTY on the PC
 //
 // 1. The user profile of the user that runs the FTP process must be defined with the path to its home directory.
 // 2. A directory named .ssh must exist under the users home directory
 // 3. The host to make SFTP/SSH connections to must exists in the known_hosts table in the .ssh directory
-//    This can be done using the following shell command :
-//    -   ssh -i /home/"ftpuser"/.ssh/known_hosts -T "user@host"
+//    This can be done using the following shell command NOTE! Must be done when logged on with the user that will run the FTP:
+//    -   ssh -T "user@host"
 // 4. When using Public Key Authentication must the Public Key be generated and setup on the FTP Host side
 //    The following shell command is used to generate the Public Key :
 //    -   ssh-keygen -t rsa  (type rsa)
@@ -33,6 +38,8 @@ ctl-opt nomain;
 //    Share the generated Public Key with the host side:
 //    -   id_rsa.pub (type rsa)
 //    -   id_dsa.pub (type dsa)
+//
+//  https://www.ibm.com/support/pages/configuring-ibm-i-ssh-sftp-and-scp-clients-use-public-key-authentication
 //
 // -----------------------------------------------------------------------------
 
@@ -173,10 +180,11 @@ dcl-proc list_Files export;
 
           if wStart + 1 < wEnd; // Files exists (not just Start and End Block)
 
-            // Get Filenames from FTP Log for Return List
+            // Get Filenames from FTP Log for Return List. Remove of possible RenoteDirectory and forward slash
             for i = wStart + 1 to wEnd - 1;
               FileRows =  FileRows + 1;
-              FileList(FileRows).FileName = FTP_Log(i).LogData;
+              FileList(FileRows).FileName = %scanrpl(%trim(RemoteDirectory) + '/' : '' : FTP_Log(i).LogData);
+              FileList(FileRows).FileName = %scanrpl('/' : '' : FileList(FileRows).FileName);
             endfor;
 
           endif;
@@ -745,8 +753,8 @@ dcl-Proc SFTPrun_cmd;
 
     // Place the FTP script file on the IFS
     Command = 'CPYTOIMPF FROMFILE(QTEMP/XYZ269) TOSTMF(' + cQuote + %trim(gblTempDir) + 'ftp_batch_scripts.sh' +
-               cQuote + ') MBROPT(*REPLACE) STMFCCSID(1208) ' +
-               'RCDDLM(*LF) DTAFMT(*FIXED)';
+                cQuote + ') MBROPT(*REPLACE) STMFCCSID(1208) ' +
+              'RCDDLM(*LF) STRDLM(*NONE) STRESCCHR(*NONE) RMVBLANK(*BOTH)';
     exec_Command(Command);
 
     clear_FTPcmdFile();
@@ -789,14 +797,15 @@ dcl-proc prep_PasswordScript_SFTP;
     exec sql
       INSERT INTO SESSION.XYZ269 (Script)
         VALUES('#!/bin/sh'),
-              ('export DISPLAY= SSH_ASKPASS=' CONCAT TRIM(:gblTempDir) CONCAT 'hm.sh'),
+              ('export DISPLAY= SSH_ASKPASS_REQUIRE=force SSH_ASKPASS=' CONCAT TRIM(:gblTempDir) CONCAT 'hm.sh'),
               ('printf "' CONCAT TRIM(:locCommand) CONCAT '" | sftp ' CONCAT
                TRIM(:inUser) CONCAT '@' CONCAT TRIM(:inHost) CONCAT
                ' > ' CONCAT TRIM(:gblTempDir) CONCAT 'log.txt 2>&1');
 
     // Place the FTP Script file on the IFS
     Command = 'CPYTOIMPF FROMFILE(QTEMP/XYZ269) TOSTMF(' + cQuote + %trim(gblTempDir) + 'sftp_password_script.sh' +
-              cQuote + ') MBROPT(*REPLACE) STMFCCSID(1208) RCDDLM(*LF) DTAFMT(*FIXED)';
+                cQuote + ') MBROPT(*REPLACE) STMFCCSID(1208) ' +
+              'RCDDLM(*LF) STRDLM(*NONE) STRESCCHR(*NONE) RMVBLANK(*BOTH)';
     exec_Command(Command);
 
   return;
@@ -1190,7 +1199,7 @@ dcl-proc prep_Password_SFTP;
     exec sql
       INSERT INTO SESSION.XYZ269 (Script)
         VALUES('#!/bin/sh'),
-              ('printf "' CONCAT TRIM(:inPassword) CONCAT '"');
+              ('printf ' CONCAT TRIM(:inPassword));
 
     if sqlcode <> 0;
       return cFalse;
@@ -1198,8 +1207,8 @@ dcl-proc prep_Password_SFTP;
 
     // Place the Password file on the IFS
     Command = 'CPYTOIMPF FROMFILE(QTEMP/XYZ269) TOSTMF(' + cQuote + %trim(gblTempDir) + 'hm.sh' +
-                 cQuote + ') MBROPT(*REPLACE) STMFCCSID(1208) ' +
-                 'RCDDLM(*LF) DTAFMT(*FIXED)';
+                cQuote + ') MBROPT(*REPLACE) STMFCCSID(1208) ' +
+              'RCDDLM(*LF) STRDLM(*NONE) STRESCCHR(*NONE) RMVBLANK(*BOTH)';
     exec_Command(Command);
 
     // Set the Password
