@@ -19,8 +19,8 @@ ctl-opt nomain;
 //                                       set to prevent new default values when upgrading IBM i OS
 // Version ........: V2.1.0 2022-12-29 - SSH_ASKPASS_REQUIRE=force added to "export DISPLAY= SSH_ASKPASS_REQUIRE=force SSH_ASKPASS="
 //                                       to support IBM i 7.5 and OpenSSH_8.6p1
-// Version ........: V2.1.1 2023-08-23 - Removal of Remote Directory and forward slsh from  filename in list_Files
-//
+// Version ........: V2.1.1 2023-08-23 - Removal of Remote Directory and forward slsh from filename in list_Files
+// Version ........: V2.1.2 2023-10-15 - Smarter handling of slashes. Removes double slashes in paths
 //
 // Information of how to use Mode SFTP:
 //
@@ -149,6 +149,7 @@ dcl-proc list_Files export;
       FTP_Command = 'ls ' +  %trim(wPrefix) + '.' + %trim(wExtension); // List files
     else;
       FTP_Command = 'ls ' +  %trim(RemoteDirectory) + '/' + %trim(wPrefix) + '.' + %trim(wExtension); // List files
+      FTP_Command = %scanrpl('//':'/':FTP_Command);
     endif;
 
     prepare_FTPcmd(FTP_Command);
@@ -180,7 +181,7 @@ dcl-proc list_Files export;
 
           if wStart + 1 < wEnd; // Files exists (not just Start and End Block)
 
-            // Get Filenames from FTP Log for Return List. Remove of possible RenoteDirectory and forward slash
+            // Get Filenames from FTP Log for Return List. Remove of possible RemoteDirectory and forward slash
             for i = wStart + 1 to wEnd - 1;
               FileRows =  FileRows + 1;
               FileList(FileRows).FileName = %scanrpl(%trim(RemoteDirectory) + '/' : '' : FTP_Log(i).LogData);
@@ -247,10 +248,12 @@ dcl-proc get_File export;
 
     if LocalDirectory <> *blanks;
       wLocalFileNameWithPath = %trim(LocalDirectory) + '/' + %trim(LocalFileName); // Set File with Path
+      wLocalFileNameWithPath = %scanrpl('//':'/':wLocalFileNameWithPath);
     endif;
 
     if RemoteDirectory <> *blanks;
       wRemoteFileNameWithPath = %trim(RemoteDirectory) + '/' + %trim(RemoteFileName); // Set File with Path
+      wRemoteFileNameWithPath = %scanrpl('//':'/':wRemoteFileNameWithPath);
     else;
       wRemoteFileNameWithPath = %trim(RemoteFileName); // Just filename
     endif;
@@ -378,11 +381,8 @@ dcl-proc mget_Files Export;
     endif;
 
     if RemoteDirectory <> *blanks ;
-      if %scanr('/':RemoteDirectory) < %len(%trim(RemoteDirectory));   // Handle trailing /
-        wRemoteFileNameWithPath = %trim(RemoteDirectory) + '/' + %trim(RemoteFileName); // Set File with Path
-      else;
-        wRemoteFileNameWithPath = %trim(RemoteDirectory) + %trim(RemoteFileName); // Set File with Path
-      endIf;
+      wRemoteFileNameWithPath = %trim(RemoteDirectory) + '/' + %trim(RemoteFileName); // Set File with Path
+      wRemoteFileNameWithPath = %scanrpl('//':'/':wRemoteFileNameWithPath);
     else;
       wRemoteFileNameWithPath = %trim(RemoteFileName); // Just filename
     endif;
@@ -492,10 +492,12 @@ dcl-proc put_File export;
 
     if LocalDirectory <> *blanks;
       wLocalFileNameWithPath = %trim(LocalDirectory) + '/' + %trim(LocalFileName); // Set File with Path
+      wLocalFileNameWithPath = %scanrpl('//':'/':wLocalFileNameWithPath);      
     endif;
 
     if RemoteDirectory <> *blanks;
       wRemoteFileNameWithPath = %trim(RemoteDirectory) + '/' + %trim(RemoteFileName); // Set File with Path
+      wRemoteFileNameWithPath = %scanrpl('//':'/':wRemoteFileNameWithPath); 
     else;
       wRemoteFileNameWithPath = %trim(RemoteFileName); // Just filename
     endif;
@@ -1067,6 +1069,7 @@ dcl-proc get_FileNamesFromLog_SFTP;
 
 
     locRemoteDirectory = %trim(inRemoteDirectory) + '/';
+    locRemoteDirectory = %scanrpl('//':'/':locRemoteDirectory); 
 
     Command = 'CPYFRMIMPF FROMSTMF(' + cQuote + %trim(gblTempDir) + 'log.txt' + cQuote + ') ' +
               'TOFILE(QTEMP/XYZ269) MBROPT(*REPLACE) RCDDLM(*LF) DTAFMT(*DLM)';
